@@ -25,141 +25,132 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 
 public class Poll {
-	
-	
-	private String pollURL;
-	private String pollAns;
-	private String proxyList;
-	private UrlValidator validator;
-	
-	private ArrayList<String> proxiesIP;
-	
-	
-	public Poll(String pollURL, String pollAns){
-		
-		this.pollURL = pollURL;
-		this.pollAns = pollAns;
-		this.proxyList = "";
-		
-		validator = new UrlValidator();
-		
-		Logger logger = Logger.getLogger ("");
-		logger.setLevel (Level.OFF);
-		
-		
-	}
-	
-	public Poll(String pollURL, String pollAns, String proxyList){
-		this.pollURL = pollURL;
-		this.pollAns = pollAns;
-		this.proxyList = proxyList;
-		
-		proxiesIP = new ArrayList<String>();
-		
-		validator = new UrlValidator();
 
-		readProxyList();
-		
-		Logger logger = Logger.getLogger ("");
-		logger.setLevel (Level.OFF);
-		
-	}
-	
-	
-	public String submitVote(){
-		String log = "";
-		try{
-			
-			if (isValidURL(pollURL)){
-				
-				String cProxy = "";
-				
-				if (proxyList.trim().length() > 0){
-					int ind = 0 + (int)(Math.random() * ((proxiesIP.size() - 0) + 1));
-					cProxy = proxiesIP.get(ind);
-					
-					
-				}
-				
-				WebClient webClient = null;
-				
-				if (cProxy.trim().length() > 0){
-					String[] tmp = cProxy.trim().split(":");
-					webClient = new WebClient(BrowserVersion.FIREFOX_17,tmp[0],Integer.parseInt(tmp[1]));
-					webClient.getProxyConfig().setProxyHost(tmp[0]);
-					webClient.getProxyConfig().setProxyPort(Integer.parseInt(tmp[1]));
-					webClient.setProxyConfig(new ProxyConfig(tmp[0],Integer.parseInt(tmp[1]),false));
-				}else{
-					webClient = new WebClient();
-				}
-				
-				webClient.setRedirectEnabled(true);
-				webClient.setThrowExceptionOnScriptError(false);
-				webClient.setThrowExceptionOnFailingStatusCode(false); 
-				
-				
-				webClient.setJavaScriptEnabled(true);
-				webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-				webClient.setActiveXNative(true);
-				webClient.setCssEnabled(true);
-				
-				webClient.getCache().clear();
-				webClient.getCookieManager().clearCookies();
-				
-				
-				HtmlPage votePage = webClient.getPage(pollURL);
-				HtmlInput radio = votePage.getHtmlElementById(pollAns);
-				radio.click();
-				
-				HtmlAnchor submit = (HtmlAnchor)votePage.getAnchorByText("Vote");
-				votePage = submit.click();
-				
-				log = "SUCCESS";
-				
-			}else{
-				log = "INVALID URL";
-			}
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		
-		return log;
-	}
-	
-	private void readProxyList(){
-		
-		try{
-			
-			File list = new File(proxyList);
-			Scanner input = new Scanner(list);
-			
-			while (input.hasNext()){
-				
-				String line = input.nextLine().trim();
-				
-				proxiesIP.add(line);				
-				
-			}
-			
-			input.close();
-			
-			
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-				
-	}
-	
-	
-	
-	private boolean isValidURL(String url){		
-		return validator.isValid(url);		
-	}
-	
-	
 
+  private String pollURL;
+  private String pollAns;
+  private String proxyList;
+  private UrlValidator validator;
+
+  private ArrayList<String> proxiesIP;
+
+
+  public Poll(String pollURL, String pollAns){
+
+    this.pollURL = pollURL;
+    this.pollAns = pollAns;
+    this.proxyList = "";
+
+    validator = new UrlValidator();
+
+    Logger logger = Logger.getLogger ("");
+    logger.setLevel (Level.OFF);
+
+
+  }
+
+  public Poll(String pollURL, String pollAns, String proxyList){
+    this.pollURL = pollURL;
+    this.pollAns = pollAns;
+    this.proxyList = proxyList;
+
+    proxiesIP = new ArrayList<String>();
+
+    validator = new UrlValidator();
+
+    readProxyList();
+
+    Logger logger = Logger.getLogger ("");
+    logger.setLevel (Level.OFF);
+
+  }
+
+
+  public String submitVote(){
+    String log = "";
+    try{
+
+      if (isValidURL(pollURL)){
+
+        String cProxy = "";
+
+        if (proxyList.trim().length() > 0){
+          int ind = 0 + (int)(Math.random() * ((proxiesIP.size() - 0) + 1));
+          cProxy = proxiesIP.get(ind);
+
+
+        }
+
+        WebClient webClient = null;
+
+        if (cProxy.trim().length() > 0){
+          String[] tmp = cProxy.trim().split(":");
+          webClient = new WebClient(BrowserVersion.FIREFOX_17,tmp[0],Integer.parseInt(tmp[1]));
+          webClient.getProxyConfig().setProxyHost(tmp[0]);
+          webClient.getProxyConfig().setProxyPort(Integer.parseInt(tmp[1]));
+          webClient.setProxyConfig(new ProxyConfig(tmp[0],Integer.parseInt(tmp[1]),false));
+        }else{
+          webClient = new WebClient();
+        }
+
+        webClient.setRedirectEnabled(true);
+        webClient.setThrowExceptionOnScriptError(false);
+        webClient.setThrowExceptionOnFailingStatusCode(false); 
+
+
+        webClient.setJavaScriptEnabled(true);
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        webClient.setActiveXNative(true);
+        webClient.setCssEnabled(true);
+
+        webClient.getCache().clear();
+        webClient.getCookieManager().clearCookies();
+
+
+        HtmlPage votePage = webClient.getPage(pollURL);
+        HtmlInput radio = votePage.getHtmlElementById(pollAns);
+        radio.click();
+
+        HtmlAnchor submit = (HtmlAnchor)votePage.getAnchorByText("Vote");
+        votePage = submit.click();
+
+        log = "SUCCESS";
+
+      }else{
+        log = "INVALID URL";
+      }
+
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+
+    return log;
+  }
+
+  private void readProxyList(){
+
+    try{
+
+      File list = new File(proxyList);
+      Scanner input = new Scanner(list);
+
+      while (input.hasNext()){
+
+        String line = input.nextLine().trim();
+
+        proxiesIP.add(line);				
+
+      }
+
+      input.close();
+
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+
+  }
+
+  private boolean isValidURL(String url){		
+    return validator.isValid(url);		
+  }
 }
